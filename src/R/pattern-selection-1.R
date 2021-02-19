@@ -2,12 +2,15 @@ library(data.table)
 library(gplots)
 library(ComplexHeatmap)
 library(gtools)
+library(dplyr)
 
 pc9.dormance <- fread("../../data/results/JP-PC9_Erlo_DTC-PC9_CT-differential-gene-selection.txt",data.table=F)
 pc9.expansion   <- fread("../../data/results/JP-PC9_3_DTEC_75d-PC9_Erlo_DTC-differential-gene-selection.txt",data.table=F)
 
 h4.dormance <- fread("../../data/results/JP-H4006_Erlo_DTC-H4006_CT_24h-differential-gene-selection.txt",data.table=F)
 h4.expansion   <- fread("../../data/results/JP-H4006_Erlo_DTEC-H4006_Erlo_DTC-differential-gene-selection.txt",data.table=F)
+
+h3.control <- fread("../../data/results/JP-H3255_Erlo_21d-H3255_NT-differential-gene-selection.txt",data.table=F)
 
 # Setup Parameters
 min.FC <- foldchange2logratio(3, base=2)
@@ -163,27 +166,36 @@ print("===============> Intersection ")
 
 print("intersection pattern1A h4 and pc9 ")
 length(intersect(h4.genes.pattern1A,pc9.genes.pattern1A))
-
+intersect.pattern1A = intersect(h4.genes.pattern1A,pc9.genes.pattern1A)
+print(intersect.pattern1A)
 print("intersection pattern1B h4 and pc9 ")
 length(intersect(h4.genes.pattern1B,pc9.genes.pattern1B))
+intersect.pattern1B <- intersect(h4.genes.pattern1B,pc9.genes.pattern1B)
+print(intersect.pattern1B)
 
 print("intersection pattern2A h4 and pc9 ")
 length(intersect(h4.genes.pattern2A,pc9.genes.pattern2A))
+intersect.pattern2A <- intersect(h4.genes.pattern2A,pc9.genes.pattern2A)
+print(intersect.pattern2A)
 
 print("intersection pattern2B h4 and pc9 ")
 length(intersect(h4.genes.pattern2B,pc9.genes.pattern2B))
+intersect.pattern2B <- intersect(h4.genes.pattern2B,pc9.genes.pattern2B)
+print(intersect.pattern2B)
 
 print("intersection pattern3A h4 and pc9 ")
 length(intersect(h4.genes.pattern3A,pc9.genes.pattern3A))
-
+intersect.pattern3A<- intersect(h4.genes.pattern3A,pc9.genes.pattern3A)
 print("intersection pattern3B h4 and pc9 ")
 length(intersect(h4.genes.pattern3B,pc9.genes.pattern3B))
+intersect.pattern3B<- intersect(h4.genes.pattern3B,pc9.genes.pattern3B)
 
 print("intersection pattern4A h4 and pc9 ")
 length(intersect(h4.genes.pattern4A,pc9.genes.pattern4A))
-
+intersect.pattern4A<- intersect(h4.genes.pattern4A,pc9.genes.pattern4A)
 print("intersection pattern4B h4 and pc9 ")
 length(intersect(h4.genes.pattern4B,pc9.genes.pattern4B))
+intersect.pattern4B<- intersect(h4.genes.pattern4B,pc9.genes.pattern4B)
 
 # Patterns Definition :
 # 1 - A : Up & Down,  B : Down & Up
@@ -191,24 +203,80 @@ length(intersect(h4.genes.pattern4B,pc9.genes.pattern4B))
 # 3 - A : Stable & Up,  B : Stable & Down
 # 4 - A : Up & Up,  B : Down & Down
 
-stop()
+
+data.pc9 <- inner_join(select(pc9.dormance, -c(3:last_col())), select(pc9.expansion, -c(3:last_col())), by = c("genes"),keep=FALSE)
+colnames(data.pc9) <- gsub('logFC.x', 'pc9.dormance', colnames(data.pc9), fixed=TRUE)
+colnames(data.pc9) <- gsub('logFC.y', 'pc9.expansion', colnames(data.pc9), fixed=TRUE)
+
+head(data.pc9 )
+
+data.h4 <- inner_join(select(h4.dormance, -c(3:last_col())), select(h4.expansion, -c(3:last_col())), by =c("genes"),keep=FALSE) 
+colnames(data.h4) <- gsub('logFC.x', 'h4.dormance', colnames(data.h4), fixed=TRUE)
+colnames(data.h4) <- gsub('logFC.y', 'h4.expansion', colnames(data.h4), fixed=TRUE)
+
+data.h4.pc9 <- inner_join(data.pc9,data.h4, by =c("genes"),keep=FALSE)
+
+# remove duplicate columns
+#data.h4.pc9 <- data.h4.pc9%>% select(-contains(".y"))
+# clean up the colnames (.x and .y were added during the merge)
+#colnames(data.h4.pc9) <- gsub('.x', '', colnames(data.h4.pc9), fixed=TRUE)
+
+data.h4.pc9.h3 <- inner_join(select(h3.control, -c(3:last_col())) , data.h4.pc9 , by =c("genes"),keep=FALSE) 
+colnames(data.h4.pc9.h3) <- gsub('logFC', 'h3.control', colnames(data.h4.pc9.h3), fixed=TRUE)
+
+data.h4.pc9.h3$pattern <- 0
+data.h4.pc9.h3 <- data.h4.pc9.h3 %>% select(pattern, everything())
+
+# Renaming clearly
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9_Erlo_DTC.*",replacement="PC9_Erlo_DTC",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9-3_NT1.*",replacement="PC9-3_NT1",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9-3_DTEC.*",replacement="PC9-3_DTEC",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9_CT_24h.*",replacement="PC9_CT_24h",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^H4006_CT_24h.*",replacement="H4006_CT_24h",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^H4006_Erlo_DTEC.*",replacement="H4006_Erlo_DTEC",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^H4006_Erlo_DTC.*",replacement="H4006_Erlo_DTC",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^H3255_NT.*",replacement="H3255_NT",perl=T)
+#colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^H3255_Erlo_21d.*",replacement="H3255_Erlo_21d",perl=T)
+
+#headerLine1 <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9_Erlo_DTC.*",replacement="T2",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^PC9-3_NT1.*",replacement="T1",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^PC9-3_DTEC.*",replacement="T3",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^PC9_CT_24h.*",replacement="T1",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^H4006_CT_24h.*",replacement="T1",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^H4006_Erlo_DTEC.*",replacement="T3",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^H4006_Erlo_DTC.*",replacement="T2",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^H3255_NT.*",replacement="T1",perl=T)
+#headerLine1 <- gsub(headerLine1 ,pattern="^H3255_Erlo_21d.*",replacement="T2",perl=T)
+
+#headerLine2 <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9_Erlo_DTC.*",replacement="PC9",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^PC9-3_NT1.*",replacement="PC9",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^PC9-3_DTEC.*",replacement="PC9",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^PC9_CT_24h.*",replacement="PC9",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^H4006_CT_24h.*",replacement="H4006",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^H4006_Erlo_DTEC.*",replacement="H4006",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^H4006_Erlo_DTC.*",replacement="H4006",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^H3255_NT.*",replacement="H3255",perl=T)
+#headerLine2 <- gsub(headerLine2,pattern="^H3255_Erlo_21d.*",replacement="H3255",perl=T)
+
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern1A] <- "1A"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern1B] <- "1B"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern2A] <- "2A"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern2B] <- "2B"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern3A] <- "3A"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern3B] <- "3B"
+data.h4.pc9.h3<- data.h4.pc9.h3[data.h4.pc9.h3$pattern!=0,]
+
+#cat(headerLine1,file="../../data/results/matrice_heatmap.txt",sep="\t")
+#cat("\n",file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
+#cat(headerLine2,file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
+#cat("\n",file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
+write.table(data.h4.pc9.h3,file=paste0("../../data/results/","matrice_heatmap.txt"),quote=F,row.names=F,sep="\t")
+
+
  
 # ====================================================================================
 # control plots
 # ====================================================================================
 
-t <- table(c(pc9.24h$genes,pc9.dtc$genes,pc9.dtec$genes,h3.24h$genes,h3.21d$genes))
-common.pc9 <- names(t)[t==5]
-init.pc9.fc <- setNames(pc9.24h$logFC,pc9.24h$genes)
-init.h3.fc <- setNames(h3.24h$logFC,h3.24h$genes)
-i21d.h3.fc <- setNames(h3.21d$logFC,h3.21d$genes)
-pc9.ratios <- cbind(init.pc9.fc[common.pc9],dtc.pc9.fc[common.pc9],dtec.pc9.fc[common.pc9],init.h3.fc[common.pc9],i21d.h3.fc[common.pc9])
-colnames(pc9.ratios) <- c("PC9 24h","PC9 DTC","PC9 DTEC","H3255 24h","H3255 21d")
-
-Heatmap(pc9.ratios[intersect(no.init.opposed.24h.dtec.pc9,common.pc9),],show_column_dend=F,column_order=colnames(pc9.ratios))
-Heatmap(pc9.ratios[intersect(no.later.opposed.dtc.dtec.pc9,common.pc9),],show_column_dend=F,column_order=colnames(pc9.ratios))
-Heatmap(pc9.ratios[intersect(opposed.init.opposed.24h.dtec.pc9,common.pc9),],show_column_dend=F,column_order=colnames(pc9.ratios))
-Heatmap(pc9.ratios[intersect(opposed.later.opposed.dtc.dtec.pc9,common.pc9),],show_column_dend=F,column_order=colnames(pc9.ratios))
-Heatmap(pc9.ratios[intersect(opposed.21d.opposed.24h.dtc.pc9,common.pc9),],show_column_dend=F,column_order=colnames(pc9.ratios))
 
 
