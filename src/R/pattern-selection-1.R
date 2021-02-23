@@ -12,6 +12,9 @@ h4.expansion   <- fread("../../data/results/JP-H4006_Erlo_DTEC-H4006_Erlo_DTC-di
 
 h3.control <- fread("../../data/results/JP-H3255_Erlo_21d-H3255_NT-differential-gene-selection.txt",data.table=F)
 
+my.genes <- fread("../../data/custom.geneslist.txt",data.table=F)
+print(my.genes)
+
 # Setup Parameters
 min.FC <- foldchange2logratio(3, base=2)
 print(min.FC)
@@ -216,17 +219,99 @@ colnames(data.h4) <- gsub('logFC.y', 'h4.expansion', colnames(data.h4), fixed=TR
 
 data.h4.pc9 <- inner_join(data.pc9,data.h4, by =c("genes"),keep=FALSE)
 
+
+data.h4.pc9.h3 <- inner_join(select(h3.control, -c(3:last_col())) , data.h4.pc9 , by =c("genes"),keep=FALSE) 
+colnames(data.h4.pc9.h3) <- gsub('logFC', 'h3.control', colnames(data.h4.pc9.h3), fixed=TRUE)
+
+write.table(filter(data.h4.pc9.h3, genes%in%  my.genes),file=paste0("../../data/results/","custom_matrice_heatmap_all_patterns.txt"),quote=F,row.names=F,sep="\t")
+
+
+data.h4.pc9.h3$pattern <- 0
+data.h4.pc9.h3 <- data.h4.pc9.h3 %>% select(pattern, everything())
+
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern1A] <- "1A"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern1B] <- "1B"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern2A] <- "2A"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern2B] <- "2B"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern3A] <- "3A"
+data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern3B] <- "3B"
+data.h4.pc9.h3<- data.h4.pc9.h3[data.h4.pc9.h3$pattern!=0,]
+
+write.table(data.h4.pc9.h3,file=paste0("../../data/results/","matrice_heatmap_all_patterns.txt"),quote=F,row.names=F,sep="\t")
+
+#==================================================================================
+#==================================================================================
+
+#primary.vs.meta.untreated <- fread("../../data/results/JP-Primary_CT-H3255_NT-differential-gene-selection.txt",data.table=F)
+#primary.vs.meta.treated <- fread("../../data/results/JP-Primary_DTC-H3255_Erlo_21d-differential-gene-selection.txt",data.table=F)
+
+# Patterns Definition :
+# 1 - Up & Up,  
+# 2 - Up & Down, 
+# 3 -  Down & Up, 
+# 4 -Down & Down 
+
+#primary.vs.meta.genes.pattern1 <- intersect(genes_up(primary.vs.meta.untreated ),genes_up(primary.vs.meta.treated))
+#primary.vs.meta.genes.pattern2 <- intersect(genes_up(primary.vs.meta.untreated ),genes_down(primary.vs.meta.treated))
+#primary.vs.meta.genes.pattern3 <- intersect(genes_down(primary.vs.meta.untreated ),genes_up(primary.vs.meta.treated))
+#primary.vs.meta.genes.pattern4 <- intersect(genes_down(primary.vs.meta.untreated ),genes_down(primary.vs.meta.treated))
+
+#print("primary.vs.meta.genes.pattern1 ")
+#length(primary.vs.meta.genes.pattern1)
+#print(primary.vs.meta.genes.pattern1)
+#write.table(primary.vs.meta.genes.pattern1,file=paste0("../../data/results/","primary.vs.meta.pattern1.txt"),quote=F,row.names=F,sep="\t")
+
+#print("primary.vs.meta.genes.pattern2 ")
+#length(primary.vs.meta.genes.pattern2)
+#print(primary.vs.meta.genes.pattern2)
+
+#print("primary.vs.meta.genes.pattern3 ")
+#length(primary.vs.meta.genes.pattern3)
+#print(primary.vs.meta.genes.pattern3)
+
+#print("primary.vs.meta.genes.pattern4 ")
+#length(primary.vs.meta.genes.pattern4)
+#print(primary.vs.meta.genes.pattern4)
+#write.table(primary.vs.meta.genes.pattern4,file=paste0("../../data/results/","primary.vs.meta.pattern4.txt"),quote=F,row.names=F,sep="\t")
+
+#data.primary.vs.meta <- inner_join(select(primary.vs.meta.untreated , -c(3:last_col())), select(primary.vs.meta.treated, -c(3:last_col())), by = c("genes"),keep=FALSE)
+
+# clean up the colnames (.x and .y were added during the merge)
+#colnames(data.primary.vs.meta) <- gsub('logFC.x', 'Prim.vs.Meta.Untreated', colnames(data.primary.vs.meta), fixed=TRUE)
+#colnames(data.primary.vs.meta) <- gsub('logFC.y', 'Prim.vs.Meta.Treated', colnames(data.primary.vs.meta), fixed=TRUE)
+
+#print(my.genes)
+#filter(primary.vs.meta.untreated,genes %in%  my.genes)
+#filter(primary.vs.meta.untreated,genes %in% "ESRP1" )
+
+#write.table(filter(data.primary.vs.meta, genes %in%  my.genes),file=paste0("../../data/results/","custom_matrice_heatmap_primary_vs_meta.txt"),quote=F,row.names=F,sep="\t")
+
+#data.primary.vs.meta$pattern <- 0
+#data.primary.vs.meta <- data.primary.vs.meta %>% select(pattern, everything())
+
+#data.primary.vs.meta$pattern[data.primary.vs.meta$genes %in% primary.vs.meta.genes.pattern1] <- "1"
+#data.primary.vs.meta$pattern[data.primary.vs.meta$genes %in% primary.vs.meta.genes.pattern2] <- "2"
+#data.primary.vs.meta$pattern[data.primary.vs.meta$genes %in% primary.vs.meta.genes.pattern3] <- "3"
+#data.primary.vs.meta$pattern[data.primary.vs.meta$genes %in% primary.vs.meta.genes.pattern4] <- "4"
+#data.primary.vs.meta<- data.primary.vs.meta[data.primary.vs.meta$pattern!=0,]
+
+#write.table(data.primary.vs.meta,file=paste0("../../data/results/","matrice_heatmap_primary_vs_meta.txt"),quote=F,row.names=F,sep="\t")
+
+
+# ====================================================================================
+# Trash
+# ====================================================================================
+
 # remove duplicate columns
 #data.h4.pc9 <- data.h4.pc9%>% select(-contains(".y"))
 # clean up the colnames (.x and .y were added during the merge)
 #colnames(data.h4.pc9) <- gsub('.x', '', colnames(data.h4.pc9), fixed=TRUE)
 
-data.h4.pc9.h3 <- inner_join(select(h3.control, -c(3:last_col())) , data.h4.pc9 , by =c("genes"),keep=FALSE) 
-colnames(data.h4.pc9.h3) <- gsub('logFC', 'h3.control', colnames(data.h4.pc9.h3), fixed=TRUE)
 
-data.h4.pc9.h3$pattern <- 0
-data.h4.pc9.h3 <- data.h4.pc9.h3 %>% select(pattern, everything())
-
+#cat(headerLine1,file="../../data/results/matrice_heatmap.txt",sep="\t")
+#cat("\n",file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
+#cat(headerLine2,file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
+#cat("\n",file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
 # Renaming clearly
 #colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9_Erlo_DTC.*",replacement="PC9_Erlo_DTC",perl=T)
 #colnames(data.h4.pc9.h3) <- gsub(colnames(data.h4.pc9.h3),pattern="^PC9-3_NT1.*",replacement="PC9-3_NT1",perl=T)
@@ -257,26 +342,4 @@ data.h4.pc9.h3 <- data.h4.pc9.h3 %>% select(pattern, everything())
 #headerLine2 <- gsub(headerLine2,pattern="^H4006_Erlo_DTC.*",replacement="H4006",perl=T)
 #headerLine2 <- gsub(headerLine2,pattern="^H3255_NT.*",replacement="H3255",perl=T)
 #headerLine2 <- gsub(headerLine2,pattern="^H3255_Erlo_21d.*",replacement="H3255",perl=T)
-
-data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern1A] <- "1A"
-data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern1B] <- "1B"
-data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern2A] <- "2A"
-data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern2B] <- "2B"
-data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern3A] <- "3A"
-data.h4.pc9.h3$pattern[data.h4.pc9.h3$genes %in% intersect.pattern3B] <- "3B"
-data.h4.pc9.h3<- data.h4.pc9.h3[data.h4.pc9.h3$pattern!=0,]
-
-#cat(headerLine1,file="../../data/results/matrice_heatmap.txt",sep="\t")
-#cat("\n",file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
-#cat(headerLine2,file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
-#cat("\n",file="../../data/results/matrice_heatmap.txt",sep="\t",append=TRUE)
-write.table(data.h4.pc9.h3,file=paste0("../../data/results/","matrice_heatmap.txt"),quote=F,row.names=F,sep="\t")
-
-
- 
-# ====================================================================================
-# control plots
-# ====================================================================================
-
-
 
