@@ -68,11 +68,11 @@ dge2by2 <- function  (two.cond,prefix,max.qval=1,min.FC=log2(1),min.count=0,plot
   
   # no filter
   sel.r <- topTags(lrt,p.value=1,adjust.method="BH",n=nrow(y$counts))
-  write.table(sel.r$table,file=paste0(fn,"-fgsea-gene-ratios.txt"),quote=F,row.names=F,sep="\t")
+  #write.table(sel.r$table,file=paste0(fn,"-fgsea-gene-ratios.txt"),quote=F,row.names=F,sep="\t")
   
   #sel.r <- topTags(lrt,p.value=max.qval,adjust.method="BH",n=nrow(y$counts))
   # Filtering 
-  sel.r <- sel.r[sel.r$table$FDR<max.qval & abs(sel.r$table[[2]])>=min.FC & apply(dge$counts[rownames(sel.r),],1,max)>min.count,]
+  sel.r <- sel.r[sel.r$table$FDR<=max.qval & abs(sel.r$table[[2]])>=min.FC & apply(dge$counts[rownames(sel.r),],1,max)>=min.count,]
   
   sel.rows<- rownames(sel.r)
   sel     <- cbind(sel.r$table,dge$counts[sel.rows,])
@@ -103,10 +103,8 @@ for (comp in comparisons){
   dge2by2(two.cond,"../../data/results/JP")
 }
 
-
 conditions[conditions%in%c("PC9_3_NT1","PC9_CT_24h","H4006_CT_24h")] <- "Primary_CT"
 conditions[conditions%in%c("PC9_Erlo_DTC","H4006_Erlo_DTC")] <- "Primary_DTC"
-
 
 comparisons <- c("Primary_CT-H3255_NT","Primary_DTC-H3255_Erlo_21d")
 
