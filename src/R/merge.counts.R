@@ -32,11 +32,17 @@ for (file in files.list){
     temp_dataset <- fread(asbolutepath2file,data.table=F)
     temp_dataset <- subset(temp_dataset,select=-c(logFC,logCPM,LR,PValue,FDR))
     dataset <- inner_join(dataset,temp_dataset, by =c("genes"),keep=FALSE)
+
     rm(temp_dataset)
   }
   
 }
+#colnames(dataset) <- gsub("*.right",'', colnames(dataset), fixed=TRUE)
+#colnames(dataset) <- gsub(".x",'', colnames(dataset), fixed=TRUE)
 
-colnames(dataset) <- gsub(".x",'', colnames(dataset), fixed=TRUE)
-head (dataset)
-write.table(dataset,file=final.file,quote=F,row.names=F,sep="\t")
+clean.dataset <- dataset[grep(".y$", names(dataset), invert = TRUE)]
+colnames(clean.dataset) <- gsub(".x",'', colnames(clean.dataset), fixed=TRUE)
+head(clean.dataset)
+write.table(clean.dataset,file=final.file,quote=F,row.names=F,sep="\t")
+
+

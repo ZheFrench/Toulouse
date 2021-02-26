@@ -33,23 +33,28 @@ matrix.please<-function(x) {
 final.file <- "/home/jp/eclipse-workspace/Toulouse/data/results/JP_final.read.tsv"
 dataframe.expression <- fread(final.file,data.table=F)
 
-C2<- read.gmt("/home/jp/eclipse-workspace/database/MSigDB/c2.all.v7.2.symbols.gmt")
-C5<- read.gmt("/home/jp/eclipse-workspace/database/MSigDB/c5.go.v7.2.symbols.gmt")
+type<-"C5"
+#C2<- read.gmt("/home/jp/eclipse-workspace/database/MSigDB/c2.all.v7.2.symbols.gmt")
+C2 <- gmtPathways("/home/jp/eclipse-workspace/database/MSigDB/c2.all.v7.2.symbols.gmt")
+
+#C5<- read.gmt("/home/jp/eclipse-workspace/database/MSigDB/c5.go.v7.2.symbols.gmt")
+C5 <- gmtPathways("/home/jp/eclipse-workspace/database/MSigDB/c5.go.v7.2.symbols.gmt")
 
 # Use Fsgea Function
 h.All <- gmtPathways("/home/jp/eclipse-workspace/database/MSigDB/h.all.v7.2.symbols.gmt")
 
 # Show the first few pathways, and within those, show only the first few genes. 
-h.All %>% head() %>% lapply(head)
+#h.All %>% head() %>% lapply(head)
 
 matrix.expression <-matrix.please(dataframe.expression)
 
-ssGseaScore <- gsva(matrix.expression, h.All , method=c( "ssgsea"), kcdf=c( "Poisson"),ssgsea.norm=FALSE,
-     abs.ranking=FALSE, min.sz=1, max.sz=Inf,parallel.sz=4,verbose=TRUE)
-     #no.bootstraps=0, bootstrap.percent = .632, parallel.sz=0, 
-     #parallel.type="SOCK", mx.diff=TRUE, 
-     #tau=switch(method, gsva=1, ssgsea=0.25, NA),
-     #kernel=TRUE, ssgsea.norm=TRUE, verbose=TRUE
-head(ssGseaScore)
-write.table(ssGseaScore,file=final.file,quote=F,row.names=F,sep="\t")
+ssGseaScore <- gsva(matrix.expression, C5 , method=c( "ssgsea"), kcdf=c( "Poisson"),ssgsea.norm=TRUE,
+     abs.ranking=FALSE, min.sz=5, max.sz=250,parallel.sz=4,verbose=TRUE)
+
+rownames(ssGseaScore)
+names <- rownames(ssGseaScore)
+ssGseaScore.clean <- cbind(names,ssGseaScore)
+# I should apply some test to clean up, and reduce number...
+head(ssGseaScore.clean)
+write.table(ssGseaScore.clean,file=glue("/home/jp/eclipse-workspace/Toulouse/data/results/{type}_ssGSEA.tsv"),quote=F,row.names=F,sep="\t")
 

@@ -14,10 +14,10 @@ h4.expansion   <- fread("../../data/results/JP-H4006_Erlo_DTEC-H4006_Erlo_DTC-di
 
 h3.control <- fread("../../data/results/JP-H3255_Erlo_21d-H3255_NT-differential-gene-selection.txt",data.table=F)
 
-#my.path <- "../../data/custom.geneslist.txt"
+my.path <- "../../data/custom.geneslist.txt"
 #my.path <- "../../data/rna.txt"
 #my.path <- "../../data/dna.txt"
-my.path <- "../../data/chrom.txt"
+#my.path <- "../../data/chrom.txt"
 
 my.genes <- fread(my.path,data.table=F)
 filename.genes.list <- gsub(".txt","",basename(my.path))

@@ -7,6 +7,7 @@ library(dplyr)
 library(viridis)
 library (glue)
 library(ggplot2)
+
 #Over-representation test(Boyle et al. 2004)
 # hypergeometric test
 #https://guangchuangyu.github.io/2016/01/go-analysis-using-clusterprofiler/
@@ -23,8 +24,7 @@ library(ggplot2)
 #opt$file
 #/home/jp/eclipse-workspace/Toulouse/data/results/GO/pc9.genes.1A.2A.txt
 
-# Create dir based of linear FC
-#dir.create(file.path("../../data/results/", glue("genes_{linear.FC}")), showWarnings = FALSE)
+
 # ==========   Settings =============================
 
 GO_bp <- read.gmt("/home/jp/eclipse-workspace/database/GO/Human_GO_bp_no_GO_iea_symbol.gmt")
