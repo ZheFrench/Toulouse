@@ -6,19 +6,19 @@ library(dplyr)
 library(tidyr)
 library(glue)
 
-pc9.dormance <- fread("../../data/results/JP-PC9_Erlo_DTC-PC9_CT-differential-gene-selection.txt",data.table=F)
-pc9.expansion   <- fread("../../data/results/JP-PC9_3_DTEC_75d-PC9_Erlo_DTC-differential-gene-selection.txt",data.table=F)
+pc9.dormance <- fread("../../data/results/pc9/JP-PC9_Erlo_DTC-PC9_CT-differential-gene-selection.txt",data.table=F)
+pc9.expansion   <- fread("../../data/results/pc9/JP-PC9_3_DTEC_75d-PC9_Erlo_DTC-differential-gene-selection.txt",data.table=F)
 
-h4.dormance <- fread("../../data/results/JP-H4006_Erlo_DTC-H4006_CT_24h-differential-gene-selection.txt",data.table=F)
-h4.expansion   <- fread("../../data/results/JP-H4006_Erlo_DTEC-H4006_Erlo_DTC-differential-gene-selection.txt",data.table=F)
+h4.dormance <- fread("../../data/results/h4/JP-H4006_Erlo_DTC-H4006_CT_24h-differential-gene-selection.txt",data.table=F)
+h4.expansion   <- fread("../../data/results/h4/JP-H4006_Erlo_DTEC-H4006_Erlo_DTC-differential-gene-selection.txt",data.table=F)
 
-h3.control <- fread("../../data/results/JP-H3255_Erlo_21d-H3255_NT-differential-gene-selection.txt",data.table=F)
+h3.control <- fread("../../data/results/h4/JP-H3255_Erlo_21d-H3255_NT-differential-gene-selection.txt",data.table=F)
 
 my.genes <- fread("../../data/custom.geneslist.txt",data.table=F)
 print(my.genes)
 
 # Setup Parameters
-linear.FC = 2
+linear.FC = 4
 linear.stable_FC = 2
 
 min.FC <- foldchange2logratio(linear.FC, base=2)

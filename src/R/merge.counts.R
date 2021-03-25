@@ -3,11 +3,15 @@ library(tidyr)
 library(dplyr)
 library(glue)
 
+
+cellline = "h4"
+
 #------------------------------------------------------------------------------
 #   Read directory with files previously created to grep read counts
 #------------------------------------------------------------------------------
-files.list <- list.files("/home/jp/eclipse-workspace/Toulouse/data/results/",pattern="(*)-differential-gene-selection.txt$")
-final.file <- "/home/jp/eclipse-workspace/Toulouse/data/results/JP_final.read.tsv"
+files.list <- list.files(glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}/"),pattern="(*)-differential-gene-selection.txt$")
+final.file <- glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}_final.read.tsv")
+
 
 #Check its existence
 if (file.exists(final.file)) {
@@ -17,7 +21,7 @@ if (file.exists(final.file)) {
 for (file in files.list){
   
   print(file)
-  asbolutepath2file <- glue("/home/jp/eclipse-workspace/Toulouse/data/results/{file}")
+  asbolutepath2file <- glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}/{file}")
   print(asbolutepath2file)
   
   if (!exists("dataset") ){
@@ -44,5 +48,4 @@ clean.dataset <- dataset[grep(".y$", names(dataset), invert = TRUE)]
 colnames(clean.dataset) <- gsub(".x",'', colnames(clean.dataset), fixed=TRUE)
 head(clean.dataset)
 write.table(clean.dataset,file=final.file,quote=F,row.names=F,sep="\t")
-
 

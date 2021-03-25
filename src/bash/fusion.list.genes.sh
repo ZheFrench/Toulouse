@@ -1,4 +1,6 @@
-cd /home/jp/eclipse-workspace/Toulouse/data/results/genes_3_2/
+DIR=genes_3_2
+
+cd /home/jp/eclipse-workspace/Toulouse/data/results/${DIR}/
 
 
 cat pc9.genes.pattern1A.txt  pc9.genes.pattern2A.txt > pc9.genes.1A.2A.txt
@@ -15,15 +17,15 @@ wc -l h4.genes.1B.2B.txt
 
 #393
 wc -l /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.rnabindingprotein_human.csv 
-grep -f /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.rnabindingprotein_human.csv -Hrn /home/jp/eclipse-workspace/Toulouse/data/results/genes_3_2/ | grep genes.pattern | sed -r 's/.genes.pattern/\t/' | sed -r s'/.txt:[0-9]+:/\t/' | sed -r s'/.*\///' > /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/rna.tsv
+grep -f /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.rnabindingprotein_human.csv -Hrn /home/jp/eclipse-workspace/Toulouse/data/results/${DIR}/ | grep genes.pattern | sed -r 's/.genes.pattern/\t/' | sed -r s'/.txt:[0-9]+:/\t/' | sed -r s'/.*\///' > /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/${DIR}_rna.tsv
 awk -F "\t" '{print $3}' /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/rna.tsv > ~/Desktop/eclipse-workspace/Toulouse/data/rna.txt
 
 #1640
 wc -l /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.dnabindingprotein_human.csv 
-grep -f /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.dnabindingprotein_human.csv -Hrn /home/jp/eclipse-workspace/Toulouse/data/results/genes_3_2/ | grep genes.pattern | sed -r 's/.genes.pattern/\t/' | sed -r s'/.txt:[0-9]+:/\t/' | sed -r s'/.*\///' > /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/dna.tsv
+grep -f /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.dnabindingprotein_human.csv -Hrn /home/jp/eclipse-workspace/Toulouse/data/results/${DIR}/ | grep genes.pattern | sed -r 's/.genes.pattern/\t/' | sed -r s'/.txt:[0-9]+:/\t/' | sed -r s'/.*\///' > /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/${DIR}_dna.tsv
 awk -F "\t" '{print $3}' /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/dna.tsv > ~/Desktop/eclipse-workspace/Toulouse/data/dna.txt
 
 #430
 wc -l /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.chromatinRemodelers_human.csv
-grep -f /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.chromatinRemodelers_human.csv -Hrn /home/jp/eclipse-workspace/Toulouse/data/results/genes_3_2/ | grep genes.pattern | sed -r 's/.genes.pattern/\t/' | sed -r s'/.txt:[0-9]+:/\t/' | sed -r s'/.*\///' > /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/chrom.tsv
+grep -f /home/jp/eclipse-workspace/Toulouse/data/gene.symbol.chromatinRemodelers_human.csv -Hrn /home/jp/eclipse-workspace/Toulouse/data/results/${DIR}/ | grep genes.pattern | sed -r 's/.genes.pattern/\t/' | sed -r s'/.txt:[0-9]+:/\t/' | sed -r s'/.*\///' > /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/${DIR}_chrom.tsv
 awk -F "\t" '{print $3}' /home/jp/eclipse-workspace/Toulouse/data/results/majorRegulators/chrom.tsv > ~/Desktop/eclipse-workspace/Toulouse/data/chrom.txt
