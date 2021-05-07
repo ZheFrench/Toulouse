@@ -1,7 +1,22 @@
-DIR=genes_3_2
+DIR=genes_2_2
+
+
 
 cd /home/jp/eclipse-workspace/Toulouse/data/results/${DIR}/
 
+#Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/pattern-selection.R
+
+Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/geneOntologyEnrichment.R -s 1A
+Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/geneOntologyEnrichment.R -s 1B
+Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/geneOntologyEnrichment.R -s 2A
+Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/geneOntologyEnrichment.R -s 2B
+Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/geneOntologyEnrichment.R -s 3A
+Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/geneOntologyEnrichment.R -s 3B
+
+print("cluster.ontology")
+Rscript /home/jp/Desktop/eclipse-workspace/Toulouse/src/R/cluster.ontology.R 
+
+stop()
 
 cat pc9.genes.pattern1A.txt  pc9.genes.pattern2A.txt > pc9.genes.1A.2A.txt
 cat pc9.genes.pattern1B.txt  pc9.genes.pattern2B.txt > pc9.genes.1B.2B.txt

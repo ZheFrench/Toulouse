@@ -1,19 +1,43 @@
-library(data.table)
-library(edgeR)
+#################################################################
+#
+# date: April 02, 2021
+# platform: Ubuntu 10.04
+# R.version : 4.0.3
+# author: Villemin Jean-Philippe
+# team: Bioinformatique et biologie des systèmes du cancer : J. Colinge 
+# Institute : IRCM
+#
+# dge-6.R
+# Usage : 
+# 
+# dge-6.R
+# 
+# Description : 
+#
+# 
+#
+#################################################################
+
+
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(edgeR))
+suppressPackageStartupMessages(library(glue))
+
+
 #statmod
-counts.1 <- fread("../../data/detc-counts.txt",data.table=F)
+counts.1 <- fread(glue("{dir.path}detc-counts.txt"),data.table=F)
 names(counts.1)[-(1:5)] <- gsub(names(counts.1)[-(1:5)],pattern="_S..?_align",replacement="",perl=T)
 names(counts.1)[-(1:5)] <- gsub(names(counts.1)[-(1:5)],pattern="_21j",replacement="_21d",perl=T)
 names(counts.1)[-(1:5)] <- gsub(names(counts.1)[-(1:5)],pattern="_75_jours",replacement="_75d",perl=T)
 
 counts.2 <- counts.1[counts.1$type=="protein_coding",]
-symbols <- counts.2$symbol
-d <- symbols[duplicated(symbols)]
-counts <- counts.2[!duplicated(counts.2$symbol),-(1:5)]
+symbols  <- counts.2$symbol
+d        <- symbols[duplicated(symbols)]
+counts   <- counts.2[!duplicated(counts.2$symbol),-(1:5)]
 rownames(counts) <- symbols[!duplicated(symbols)]
 
 q <- colSums(counts)
-pdf("../../data/results/total-reads.pdf",width=5,height=5,pointsize=8,useDingbats=F)
+pdf(glue("{dir.path}results/total-reads.pdf")),width=5,height=5,pointsize=8,useDingbats=F)
 par(mar=c(4,9,2,3)+0.1)
 barplot(q,xlab="Read counts",horiz=T,las=2,cex.names=0.6,cex.axis=0.7)
 dev.off()
@@ -57,17 +81,17 @@ dge2by2 <- function  (two.cond,prefix,max.qval=1,min.FC=log2(1),min.count=0,plot
 
   design <- model.matrix(~0+dge$group) # no intercept #x0 = 1,  force model throught the origin
   colnames(design) <- gsub("^dge$group","",colnames(design))
- 
+  print(colnames) # CHECK
   cm <- makeContrasts(contrasts=comp,levels=dge$group)
   
   y     <- estimateDisp(dge,design,robust=T)
   fit.y <- glmFit(y,design)
-  lrt   <- glmLRT(fit.y,contrast=cm)
+  lrt   <- glmLRT(fit.y,contrast = cm)
   
   if (plot)
   
   # no filter
-  sel.r <- topTags(lrt,p.value=1,adjust.method="BH",n=nrow(y$counts))
+  sel.r <- topTags(lrt,p.value=1,adjust.method="BH",n = nrow(y$counts))
   #write.table(sel.r$table,file=paste0(fn,"-fgsea-gene-ratios.txt"),quote=F,row.names=F,sep="\t")
   
   #sel.r <- topTags(lrt,p.value=max.qval,adjust.method="BH",n=nrow(y$counts))
@@ -100,7 +124,7 @@ comparisons <- c("PC9_Erlo_DTC-PC9_CT",
 
 for (comp in comparisons){
   two.cond <- strsplit(comp,"-")[[1]][1:2]
-  dge2by2(two.cond,"../../data/results/JP")
+  dge2by2(two.cond,glue("{dir.path}results/JP"))
 }
 
 conditions[conditions%in%c("PC9_3_NT1","PC9_CT_24h","H4006_CT_24h")] <- "Primary_CT"
@@ -110,14 +134,14 @@ comparisons <- c("Primary_CT-H3255_NT","Primary_DTC-H3255_Erlo_21d")
 
 for (comp in comparisons){
   two.cond <- strsplit(comp,"-")[[1]][1:2]
-  dge2by2(two.cond,"../../data/results/JP")
+  dge2by2(two.cond,glue("{dir.path}results/JP"))
 }
 
 #sel.genes <- NULL
 #for (comp in comparisons){
-#  d <- fread(paste0("../../data/results/JP-",comp,"-differential-gene-selection.txt"),data.table=F)
+#  d <- fread(paste0(glue"{dir.path}results/JP-"),comp,"-differential-gene-selection.txt"),data.table=F)
 #  sel.genes <- union(sel.genes,d[["genes"]])
 #}
-#write.table(sel.genes,file="../../data/results/JP-genes-selection.txt",quote=F,row.names=F,col.names=F)
+#write.table(sel.genes,file=glue"{dir.path}results/JP-genes-selection.txt"),quote=F,row.names=F,col.names=F)
 
 

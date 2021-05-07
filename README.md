@@ -1,4 +1,4 @@
-# Toulouse Project
+# Toulouse Project - RNA-SEQ
 
 ---
 
@@ -6,7 +6,7 @@ Compute differential gene expression, find patterns of expression and do some ge
 
 Execute scripts in src directory. It called files using relative paths.
 
-1. dge-6.R
+1. dge-6.R - Differential gene expression based on count matrix. Create gene-selection and gene-ratio which are the same things, just the format differs.
 
 2. pattern-selection-1.R
 
@@ -14,7 +14,7 @@ Execute scripts in src directory. It called files using relative paths.
 
 4. merge.counts.R
 
-5. ssGSEA.R
+5. ssGSEA.R ( I'm not using it finally)
 
 6. fGSEA.R
 

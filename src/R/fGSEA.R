@@ -1,35 +1,58 @@
-library(optparse)
-library(fgsea)
-library(data.table)
-library(tidyr)
-library(dplyr)
-library(glue)
-library(tibble)
-library(data.table)
-library(ggplot2)
-library(clusterProfiler)
-library(reshape2)
+#################################################################
+#
+# date: April 02, 2021
+# platform: Ubuntu 10.04
+# R.version : 4.0.3
+# author: Villemin Jean-Philippe
+# team: Bioinformatique et biologie des systèmes du cancer : J. Colinge 
+# Institute : IRCM
+#
+# fGSEA.R
+# Usage : 
+# 
+# fGSEA.R
+# 
+# Description : 
+#
+# 
+#
+#################################################################
+
+suppressPackageStartupMessages(library(optparse))
+suppressPackageStartupMessages(library(fgsea))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(tibble))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(clusterProfiler))
+suppressPackageStartupMessages(library(reshape2))
 #https://davetang.org/muse/2018/01/10/using-fast-preranked-gene-set-enrichment-analysis-fgsea-package/
 #https://github.com/ctlab/fgsea
 #https://stephenturner.github.io/deseq-to-fgsea/
 
+# ==========   Settings =============================
 
 cellline = "h4"
 
 print(glue(" CellLine : {cellline} "))
 
+base.dir <- "/data/villemin/code/Toulouse-rnaseq/"
+
 # OUTPUT
-final.file.padj <- glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}-fgsea.padj.txt")
-final.file.nes  <- glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}-fgsea.nes.txt")
+final.file.padj <- glue("{base.dir}data/results/{cellline}-fgsea.padj.txt")
+final.file.nes  <- glue("{base.dir}data/results/{cellline}-fgsea.nes.txt")
 
 set.seed(423)
 #------------------------------------------------------------------------------
 #   Read directory with files previously created ordered by FC and apply fsGEA
 #------------------------------------------------------------------------------
-files.list <- list.files(glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}/"),pattern="(*)-fgsea-gene-ratios.txt$")
+files.list <- list.files(glue("{base.dir}data/results/{cellline}/"),pattern="(*)-fgsea-gene-ratios.txt$")
 
 
-file.gmt <- "/home/jp/eclipse-workspace/database/MSigDB/c5.go.v7.2.symbols.gmt"
+file.gmt <- "/data/villemin/annotation/gsea/MSigDB/c5.go.v7.2.symbols.gmt"
 
 #file.gmt <- "/home/jp/eclipse-workspace/database/MSigDB/c2.all.v7.2.symbols.gmt"
 #file.gmt <- "/home/jp/eclipse-workspace/database/MSigDB/c3.tft.gtrd.v7.2.symbols.gmt"
@@ -45,18 +68,17 @@ i=0
 colname <-"pathway"
 for (file in files.list){
        
-  asbolutepath2file <- glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}/{file}")
+  asbolutepath2file <- glue("{base.dir}data/results/{cellline}/{file}")
 
   file <- gsub(file,pattern= "-fgsea-gene-ratios.txt",replacement="",perl=T)
   file <- gsub(file,pattern= "JP-",replacement="",perl=T)
 
-  subpath <- file.path(glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}/{file}/"), subDir)
+  subpath <- file.path(glue("{base.dir}data/results/{cellline}/{file}/"), subDir)
   dir.create(subpath, recursive = TRUE)
   
   print(glue(" File : {file} "))
   print(glue(" Subpath : {subpath} "))
   
-
   dataframe.expression <- fread(asbolutepath2file,data.table=F)
 
   dataframe.expression <- subset(dataframe.expression,select=c(genes,logFC))
@@ -71,7 +93,7 @@ for (file in files.list){
 
   #not using fgseaMultilevel...a really tiny difference in NES score due to the fact it use fgsea.
   # But genes used are the same so I used it to plot with heatplot function of clusterProfiler the leading edge genes contained in the signature I am interested in
-  egmt2 <- GSEA(ranks_decreasing, TERM2GENE=h.All.bis, by = "fgsea",verbose=TRUE ,nPermSimple = 10000 ,minGSSize  = 10, maxGSSize  = 325 , eps = 0,  pvalueCutoff = 1)
+  egmt2 <- GSEA(ranks_decreasing, TERM2GENE = h.All.bis, by = "fgsea",verbose=TRUE ,nPermSimple = 10000 ,minGSSize  = 10, maxGSSize  = 325 , eps = 0,  pvalueCutoff = 1)
   # You dont need the whole object to be written
   write.table(egmt2, file=glue("{subpath}/{file}-full-gsea-clusterprofiler.tsv"),quote=F,row.names=F,sep="\t")
 
@@ -79,7 +101,7 @@ for (file in files.list){
   fgseaRes     <- fgseaMultilevel(pathways=h.All, stats=ranks,eps=0, nPermSimple = 10000 ,minSize  = 10, maxSize  = 325)
   
   for (pathway in names(h.All)){
-    if (pathway %in% c("CONTRACTILE_FIBER","MYOFIBRIL_ASSEMBLY","MUSCLE_CONTRACTION" )){
+    if (pathway %in% c("GO_CONTRACTILE_FIBER","GO_MYOFIBRIL_ASSEMBLY","GO_MUSCLE_CONTRACTION","GO_REGULATION_OF_MUSCLE_CONTRACTION" )){
       #print(pathway)
       #print(h.All[[pathway]])
       p<- plotEnrichment(h.All[[pathway]], ranks) + labs(title=pathway)
@@ -109,18 +131,16 @@ for (file in files.list){
   
   png(file=glue("{subpath}/{file}-global.png"),width=900)
   print(ggplot( filter(fgseaResTidy ,abs(NES) >= 1.7), aes(reorder(pathway, NES), NES)) +
-    geom_col( aes(fill=padj<0.01),color="#5F6368") +
+    geom_col( aes(fill= padj < 0.01),color="#5F6368") +
     coord_flip() +
     labs(x="Pathway", y="Normalized Enrichment Score",title=file) + 
     theme_minimal())
   dev.off()
   
-  test <- c("PRC2_EZH2_UP.V1_UP","PRC2_EZH2_UP.V1_DN","BLUM_RESPONSE_TO_SALIRASIB_DN","BLUM_RESPONSE_TO_SALIRASIB_UP","E2F1_UP.V1_UP","E2F1_UP.V1_DN")
-  
-  #write.table(dataframe.expression,glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}/{file}-expresssion.tsv"),quote=F,row.names=T,sep="\t")
+  #write.table(dataframe.expression,glue("{base.dir}data/results/{cellline}/{file}-expresssion.tsv"),quote=F,row.names=T,sep="\t")
 
   heatplot_up <- heatplot(egmt2,foldChange=ranks, showCategory =   topPathwaysUp)
-  #png(file=glue("/home/jp/eclipse-workspace/Toulouse/data/results/{cellline}/{file}-heatplot-up-gsea.png"),width=2000)   
+  #png(file=glue("{base.dir}data/results/{cellline}/{file}-heatplot-up-gsea.png"),width=2000)   
   #print(  heatplot_up + theme(  axis.text.y = element_text( size = 12)))
   #dev.off()
   
