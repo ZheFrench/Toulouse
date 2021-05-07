@@ -104,20 +104,29 @@ genes_stable<- function (list,FC=stable.FC,FDR=max.FDR,count=min.count){
 write.table(sort(genes_up(h3.control)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h3.genes.patternUP.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 write.table(sort(genes_down(h3.control)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h3.genes.patternDOWN.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 
+cat(genes_up(h3.control),genes_down(h3.control),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h3.control.genes.patternALL.txt"), sep="\n")
+
 write.table(sort(genes_up(h4.dormance)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h4.dormance.genes.patternUP.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 write.table(sort(genes_down(h4.dormance)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h4.dormance.genes.patternDOWN.txt"),quote=F,row.names=F,sep="\t",col.names=F)
+
+cat(genes_up(h4.dormance),genes_down(h4.dormance),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h4.dormance.genes.patternALL.txt"), sep="\n")
 
 write.table(sort(genes_up(h4.expansion)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h4.expansion.genes.patternUP.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 write.table(sort(genes_down(h4.expansion)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h4.expansion.genes.patternDOWN.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 
+cat(genes_up(h4.expansion),genes_down(h4.expansion),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/h4.expansion.genes.patternALL.txt"), sep="\n")
+
 write.table(sort(genes_up(pc9.expansion)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/pc9.expansion.genes.patternUP.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 write.table(sort(genes_down(pc9.expansion)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/pc9.expansion.genes.patternDOWN.txt"),quote=F,row.names=F,sep="\t",col.names=F)
+
+cat(genes_up(pc9.expansion),genes_down(pc9.expansion),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/pc9.expansion.genes.patternALL.txt"), sep="\n")
 
 write.table(sort(genes_up(pc9.dormance)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/pc9.dormance.genes.patternUP.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 write.table(sort(genes_down(pc9.dormance)),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/pc9.dormance.genes.patternDOWN.txt"),quote=F,row.names=F,sep="\t",col.names=F)
 
+cat(genes_up(pc9.dormance),genes_down(pc9.dormance),file=glue("{dir.path}/genes_{linear.FC}_{linear.stable_FC}/pc9.dormance.genes.patternALL.txt"), sep="\n")
 
-
+stop()
 #--------------- Pattern 1 -----------------------
 print("===============>Pattern 1")
 # PC9 Dormance -> UP and Expansion -> Down

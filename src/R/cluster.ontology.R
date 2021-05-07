@@ -83,8 +83,10 @@ i=1
 
 for (cellLine in c("pc9.dormance","pc9.expansion","h4.expansion","h4.dormance","h3") ) {
   
-  for (subset in c("UP","DOWN") ) {
-    
+  #for (subset in c("UP","DOWN") ) {
+  for (subset in c("ALL") ) {
+
+    print(cellLine)
     genes   <- fread(glue("{base.dir}data/results/{dir}/{cellLine}.genes.pattern{subset}.txt"),data.table=F)
     
     # list to character
@@ -102,19 +104,20 @@ for (cellLine in c("pc9.dormance","pc9.expansion","h4.expansion","h4.dormance","
 
 all.celllines.in.dataframe  = do.call(rbind, all.celllines)
 
-head(all.celllines.in.dataframe )
 
-
-write.csv(all.celllines.in.dataframe  ,file = glue("{base.dir}data/results/GO/alldatrame.csv"), row.names=FALSE)
+write.csv(all.celllines.in.dataframe  ,file = glue("{base.dir}data/results/GO/alldataframe.csv"), row.names=FALSE)
 
 #############################################################################
 subpath <- file.path(glue("{base.dir}data/results/GO/"), "dotplot")
-dir.create(subpath, recursive = TRUE)
+dir.create(subpath, recursive = TRUE, showWarnings = FALSE)
 
 #Bug with points
-#all.celllines.dataframe$geneslist <- gsub("\\.", "_", all.celllines.in.dataframe$geneslist)
+all.celllines.in.dataframe$cellline <- gsub("\\.", "_", all.celllines.in.dataframe$cellline)
+head(all.celllines.in.dataframe )
 
 formula_res <- compareCluster(data=all.celllines.in.dataframe ,genes~geneslist+cellline,  fun =  "enricher",TERM2GENE=Reactome, TERM2NAME=NA,pvalueCutoff = 0.05,pAdjustMethod = "BH",minGSSize = 10,maxGSSize = 500, qvalueCutoff = 0.05)
+
+write.csv(formula_res  ,file = glue("{subpath}/Reactome.enrichR.csv"), row.names=FALSE)
 
 png(file=glue("{subpath}/Reactome.genes.doptplot.png"),width=1200,height=1200)
 dotplot(formula_res, x=~geneslist,showCategory=10)   + ggplot2::facet_grid(~cellline) + theme_gray( )+theme( axis.text.y = element_text( size = 16)) 
@@ -122,11 +125,15 @@ dev.off()
 
 formula_res <- compareCluster(data=all.celllines.in.dataframe,genes~geneslist+cellline,  fun =  "enricher", TERM2GENE=GO_bpterm2gene, TERM2NAME=GO_bpterm2name,pvalueCutoff = 0.05,pAdjustMethod = "BH",minGSSize = 10,maxGSSize = 500, qvalueCutoff = 0.05)
 
+write.csv(formula_res  ,file = glue("{subpath}/Gobp.enrichR.csv"), row.names=FALSE)
+
 png(file=glue("{subpath}/Gobp.genes.doptplot.png"),width=1600,height=1400)
 dotplot(formula_res, x=~geneslist,showCategory=10)   + ggplot2::facet_grid(~cellline) + theme_gray() +theme( axis.text.y = element_text( size = 16))  
 dev.off()
 
 formula_res <- compareCluster(data=all.celllines.in.dataframe,genes~geneslist+cellline,  fun =  "enricher", TERM2GENE=GO_mfterm2gene, TERM2NAME=GO_mfterm2name,pvalueCutoff = 0.05,pAdjustMethod = "BH",minGSSize = 10,maxGSSize = 500, qvalueCutoff = 0.05)
+
+write.csv(formula_res  ,file = glue("{subpath}/Gomf.enrichR.csv"), row.names=FALSE)
 
 png(file=glue("{subpath}/Gomf.genes.doptplot.png"),width=1600,height=1400)
 dotplot(formula_res, x=~geneslist,showCategory=10)   + ggplot2::facet_grid(~cellline) + theme_gray() +theme( axis.text.y = element_text( size = 16))  
@@ -134,11 +141,15 @@ dev.off()
 
 formula_res <- compareCluster(data=all.celllines.in.dataframe,genes~geneslist+cellline,  fun =  "enricher", TERM2GENE=GO_ccterm2gene, TERM2NAME=GO_ccterm2name,pvalueCutoff = 0.05,pAdjustMethod = "BH",minGSSize = 10,maxGSSize = 500, qvalueCutoff = 0.05)
 
+write.csv(formula_res  ,file = glue("{subpath}/Gocc.enrichR.csv"), row.names=FALSE)
+
 png(file=glue("{subpath}/Gocc.genes.doptplot.png"),width=1600,height=1400)
 dotplot(formula_res, x=~geneslist,showCategory=10)   + ggplot2::facet_grid(~cellline) + theme_gray() +theme( axis.text.y = element_text( size = 16))  
 dev.off()
 
 formula_res <- compareCluster(data=all.celllines.in.dataframe,genes~geneslist+cellline,  fun =  "enricher", TERM2GENE=GoAll, TERM2NAME=NA,pvalueCutoff = 0.05,pAdjustMethod = "BH",minGSSize = 10,maxGSSize = 500, qvalueCutoff = 0.05)
+
+write.csv(formula_res  ,file = glue("{subpath}/GoAll.enrichR.csv"), row.names=FALSE)
 
 png(file=glue("{subpath}/GoAll.genes.doptplot.png"),width=1600,height=1400)
 dotplot(formula_res, x=~geneslist,showCategory=10)   + ggplot2::facet_grid(~cellline) + theme_gray() +theme( axis.text.y = element_text( size = 16))  
