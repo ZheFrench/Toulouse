@@ -16,7 +16,9 @@ Execute scripts in src directory. It called files using relative paths.
 
 5. ssGSEA.R
 
-6. heatmap-customGenes.R 
+6. fGSEA.R
+
+7. heatmap-customGenes.R 
 
 Print matrice in file in order to draw heatmap.  
 
