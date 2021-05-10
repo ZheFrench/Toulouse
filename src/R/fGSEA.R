@@ -35,15 +35,13 @@ suppressPackageStartupMessages(library(reshape2))
 
 # ==========   Settings =============================
 
-cellline = "h4"
+cellline = "pc9"
 
 print(glue(" CellLine : {cellline} "))
 
 base.dir <- "/data/villemin/code/Toulouse-rnaseq/"
 
-# OUTPUT
-final.file.padj <- glue("{base.dir}data/results/{cellline}-fgsea.padj.txt")
-final.file.nes  <- glue("{base.dir}data/results/{cellline}-fgsea.nes.txt")
+
 
 set.seed(423)
 #------------------------------------------------------------------------------
@@ -54,10 +52,19 @@ files.list <- list.files(glue("{base.dir}data/results/{cellline}/"),pattern="(*)
 
 file.gmt <- "/data/villemin/annotation/gsea/MSigDB/c5.go.v7.2.symbols.gmt"
 
+base <-sub('\\..[^\\.]*$', '', basename(file.gmt) )
+print(base)
+
+ 
 #file.gmt <- "/home/jp/eclipse-workspace/database/MSigDB/c2.all.v7.2.symbols.gmt"
 #file.gmt <- "/home/jp/eclipse-workspace/database/MSigDB/c3.tft.gtrd.v7.2.symbols.gmt"
 #file.gmt <- "/home/jp/eclipse-workspace/database/MSigDB/c6.all.v7.2.symbols.gmt"
 #file.gmt <- "/home/jp/eclipse-workspace/database/MSigDB/jp.gmt"
+
+
+# OUTPUT
+final.file.padj <- glue("{base.dir}data/results/{cellline}-fgsea.padj.txt")
+final.file.nes  <- glue("{base.dir}data/results/{cellline}-fgsea.nes.txt")
 
 h.All <- gmtPathways(file.gmt) # 6226
 h.All.bis <- read.gmt(file.gmt)
@@ -91,7 +98,7 @@ for (file in files.list){
   
   ranks <- deframe(dataframe.expression)
 
-  #not using fgseaMultilevel...a really tiny difference in NES score due to the fact it use fgsea.
+  #not using fgseaMultilevel...a really tiny difference in NES score due to the fact it use fgsea.10/325 5 /250
   # But genes used are the same so I used it to plot with heatplot function of clusterProfiler the leading edge genes contained in the signature I am interested in
   egmt2 <- GSEA(ranks_decreasing, TERM2GENE = h.All.bis, by = "fgsea",verbose=TRUE ,nPermSimple = 10000 ,minGSSize  = 10, maxGSSize  = 325 , eps = 0,  pvalueCutoff = 1)
   # You dont need the whole object to be written
